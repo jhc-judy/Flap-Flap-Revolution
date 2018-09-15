@@ -9,7 +9,7 @@ public class Bird : MonoBehaviour
 	private bool isDead = false;			//Has the player collided with a wall?
 
 	private Animator anim;					//Reference to the Animator component.
-	private Rigidbody2D rb2d;               //Holds a reference to the Rigidbody2D component of the bird.
+	public Rigidbody2D rb2d;               //Holds a reference to the Rigidbody2D component of the bird.
 
     //[SerializeField]
     //private Text m_Recognitions;
@@ -74,6 +74,11 @@ public class Bird : MonoBehaviour
         // pass the value to a static var so we can access it from anywhere
         MicLoudness = LevelMax();
         //Debug.Log(MicLoudness);
+
+        if(gameObject.transform.position.y > 4.5f)
+        {
+            gameObject.transform.position = new Vector3(-7.5f, 4.5f, 0.0f);
+        }
     }
 
 
@@ -171,15 +176,23 @@ public class Bird : MonoBehaviour
 
 	void OnCollisionEnter2D(Collision2D other)
 	{
-		// Zero out the bird's velocity
-		rb2d.velocity = Vector2.zero;
-		// If the bird collides with something set it to dead...
-		isDead = true;
-		//...tell the Animator about it...
-		anim.SetTrigger ("Die");
-		//...and tell the game control about it.
-		GameControl.instance.BirdDied ();
-        //m_DictationRecognizer.Stop();
-        StopMicrophone();
+        if(other.gameObject.tag == "Ground")
+        {
+            // Zero out the bird's velocity
+            rb2d.velocity = Vector2.zero;
+            // If the bird collides with something set it to dead...
+            isDead = true;
+            //...tell the Animator about it...
+            anim.SetTrigger("Die");
+            //...and tell the game control about it.
+            GameControl.instance.BirdDied();
+            //m_DictationRecognizer.Stop();
+            StopMicrophone();
+        }
+        else
+        {
+            GameControl.instance.BirdScored();
+        }
+		
     }
 }
